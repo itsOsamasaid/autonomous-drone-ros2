@@ -1,6 +1,10 @@
 MIT License
 
+<<<<<<< HEAD
 Copyright (c) 2026 Osama Said
+=======
+Copyright (c) 2026 Osama Ahmed
+>>>>>>> c3db95a (autonomous drone navigation with ROS 2 Jazzy)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
