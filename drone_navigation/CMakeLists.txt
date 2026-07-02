@@ -17,6 +17,7 @@ install(PROGRAMS
   drone_navigation/position_hold_node.py
   drone_navigation/mission_node.py
   drone_navigation/vision_pose_bridge.py
+  drone_navigation/evo_mini_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

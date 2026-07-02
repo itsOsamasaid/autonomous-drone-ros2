@@ -1,0 +1,36 @@
+# FlyDuck MAVROS overrides — loaded after mavros' stock apm_config.yaml.
+# Denylist replaces apm_pluginlists.yaml: distance_sensor and vision_pose stay enabled.
+/**:
+  ros__parameters:
+    plugin_denylist:
+      - actuator_control
+      - ftp
+      - safety_area
+      - hil
+      - altitude
+      - debug_value
+      - image_pub
+      - px4flow
+      - vibration
+      - vision_speed_estimate
+      - wheel_odometry
+
+# Evo Mini: /mavros/distance_sensor/rangefinder_sub -> DISTANCE_SENSOR (down-facing)
+/**/distance_sensor:
+  ros__parameters:
+    config: |
+      rangefinder_sub:
+        subscriber: true
+        id: 0
+        orientation: PITCH_270
+
+# odom->base_link TF comes from our odom_tf_node, not MAVROS
+/**/local_position:
+  ros__parameters:
+    tf:
+      send: false
+
+/**/global_position:
+  ros__parameters:
+    tf:
+      send: false

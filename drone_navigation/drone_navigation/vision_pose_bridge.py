@@ -56,6 +56,7 @@ class VisionPoseBridge(Node):
 
         self._warn_count = 0
         self._ok_logged = False
+        self._last_stamp = None
         self.timer = self.create_timer(1.0 / rate, self.publish_pose)
 
         self.get_logger().info(
@@ -74,6 +75,12 @@ class VisionPoseBridge(Node):
                     f'No {self.map_frame}->{self.base_frame} transform yet '
                     f'(is slam_toolbox + TF running?)')
             return
+
+        # don't feed EKF3 duplicate-stamped samples
+        stamp = (tf.header.stamp.sec, tf.header.stamp.nanosec)
+        if stamp == self._last_stamp:
+            return
+        self._last_stamp = stamp
 
         msg = PoseStamped()
         # Keep the transform's own timestamp — EKF3 fuses by time, so the
