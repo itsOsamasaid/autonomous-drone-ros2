@@ -11,8 +11,9 @@ slam_toolbox:
     minimum_time_interval: 0.5
     transform_timeout: 0.2
 
-    minimum_travel_distance: 0.1
-    minimum_travel_heading: 0.1
+    # 0.0 = process every scan; lets internal scan-matching track without odometry
+    minimum_travel_distance: 0.0
+    minimum_travel_heading: 0.0
 
     map_update_interval: 2.0
 

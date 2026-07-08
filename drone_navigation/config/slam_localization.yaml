@@ -15,8 +15,10 @@ slam_toolbox:
     transform_timeout: 0.2
     transform_publish_period: 0.02
 
-    minimum_travel_distance: 0.05
-    minimum_travel_heading: 0.05
+    # 0.0 = process every scan; identity odom reports no motion, so any nonzero
+    # gate freezes localization. Scan-matching then tracks pose directly.
+    minimum_travel_distance: 0.0
+    minimum_travel_heading: 0.0
 
     use_scan_matching: true
     use_scan_barycenter: true

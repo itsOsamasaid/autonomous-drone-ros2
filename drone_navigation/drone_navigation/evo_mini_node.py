@@ -47,8 +47,9 @@ class EvoMiniNode(Node):
         self.min_range = float(self.get_parameter('min_range').value)
         self.max_range = float(self.get_parameter('max_range').value)
 
+        # MAVROS distance_sensor plugin subscribes at /mavros/<config-key>, no sub-namespace
         self.pub = self.create_publisher(
-            Range, '/mavros/distance_sensor/rangefinder_sub', 10)
+            Range, '/mavros/rangefinder_sub', 10)
 
         self.ser = None
         self.buf = bytearray()

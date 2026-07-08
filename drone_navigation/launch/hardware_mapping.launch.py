@@ -40,13 +40,13 @@ def generate_launch_description():
             )
         ),
 
-        # 2. base_link -> laser  (real measured: x0 y0 z0.08, 0deg faces nose)
+        # 2. base_link -> laser  (x0 y0 z0.08; LiDAR yaw offset ~pi/2 vs body nose)
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_laser',
             arguments=['--x', '0', '--y', '0', '--z', '0.08',
-                       '--roll', '0', '--pitch', '0', '--yaw', '0',
+                       '--roll', '0', '--pitch', '0', '--yaw', '-1.5708',
                        '--frame-id', 'base_link', '--child-frame-id', 'laser'],
         ),
 
