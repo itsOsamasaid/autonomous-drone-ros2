@@ -3,7 +3,7 @@ slam_toolbox:
     base_frame: base_link
     map_frame: map
     odom_frame: odom
-    scan_topic: /scan
+    scan_topic: /scan_filtered
     mode: localization
 
     # map_file_name is set from the launch file (saved .posegraph, no extension)

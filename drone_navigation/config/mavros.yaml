@@ -21,6 +21,9 @@
     config: |
       rangefinder_sub:
         subscriber: true
+        id: 1
+        orientation: PITCH_270
+      rangefinder_echo:
         id: 0
         orientation: PITCH_270
 

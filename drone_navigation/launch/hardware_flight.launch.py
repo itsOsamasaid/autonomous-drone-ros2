@@ -70,11 +70,11 @@ def generate_launch_description():
         IncludeLaunchDescription(PythonLaunchDescriptionSource(
             os.path.join(sllidar_dir, 'launch', 'sllidar_c1_launch.py'))),
 
-        # 3. base_link -> laser (measured mount). LiDAR yaw offset ~pi/2 vs body nose.
+        # 3. base_link -> laser (measured mount). LiDAR arrow aligned with FC nose -> yaw 0.
         Node(
             package='tf2_ros', executable='static_transform_publisher', name='base_to_laser',
             arguments=['--x', '0', '--y', '0', '--z', '0.08',
-                       '--roll', '0', '--pitch', '0', '--yaw', '-1.5708',
+                       '--roll', '0', '--pitch', '0', '--yaw', '0',
                        '--frame-id', 'base_link', '--child-frame-id', 'laser'],
         ),
 
@@ -88,6 +88,12 @@ def generate_launch_description():
                        '--roll', '0', '--pitch', '0', '--yaw', '0',
                        '--frame-id', 'odom', '--child-frame-id', 'base_link'],
         ),
+
+        # 4b. tilt gate: /scan -> /scan_filtered, dropping scans while the drone is tilted
+        # (2D LiDAR scans corrupt when the airframe tilts; keeps corruption out of SLAM).
+        Node(
+            package='drone_navigation', executable='scan_tilt_filter.py',
+            parameters=[{'max_tilt_deg': 8.0}], output='screen'),
 
         # 5. slam_toolbox localization vs saved map -> map->odom (auto configure+activate)
         slam,

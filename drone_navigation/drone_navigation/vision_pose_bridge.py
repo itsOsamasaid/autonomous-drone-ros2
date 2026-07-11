@@ -26,6 +26,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.time import Time
 from geometry_msgs.msg import PoseStamped, TransformStamped
+from geographic_msgs.msg import GeoPointStamped
 from tf2_ros import (
     Buffer,
     TransformListener,
@@ -53,6 +54,16 @@ class VisionPoseBridge(Node):
 
         self.pose_pub = self.create_publisher(
             PoseStamped, '/mavros/vision_pose/pose', 10)
+
+        # external nav has no GPS, so the EKF origin/home must be set or arming
+        # fails with 'AHRS: waiting for home'. Publish a fixed origin once vision
+        # is flowing (resent a few times so MAVROS reliably forwards it).
+        self.declare_parameter('origin_lat', 47.3977)
+        self.declare_parameter('origin_lon', 8.5456)
+        self.declare_parameter('origin_alt', 488.0)
+        self.origin_pub = self.create_publisher(
+            GeoPointStamped, '/mavros/global_position/set_gp_origin', 10)
+        self._origin_sent = 0
 
         self._warn_count = 0
         self._ok_logged = False
@@ -92,6 +103,19 @@ class VisionPoseBridge(Node):
         msg.pose.position.z = tf.transform.translation.z
         msg.pose.orientation = tf.transform.rotation
         self.pose_pub.publish(msg)
+
+        # set the EKF origin ~20 times once vision is up (clears 'waiting for home')
+        if self._origin_sent < 20:
+            o = GeoPointStamped()
+            o.header.stamp = self.get_clock().now().to_msg()
+            o.header.frame_id = self.map_frame
+            o.position.latitude = self.get_parameter('origin_lat').value
+            o.position.longitude = self.get_parameter('origin_lon').value
+            o.position.altitude = self.get_parameter('origin_alt').value
+            self.origin_pub.publish(o)
+            self._origin_sent += 1
+            if self._origin_sent == 20:
+                self.get_logger().info('EKF origin set (home should be ready).')
 
         if not self._ok_logged:
             self._ok_logged = True

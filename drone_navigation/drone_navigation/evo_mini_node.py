@@ -92,9 +92,16 @@ class EvoMiniNode(Node):
             self.handle_range((frame[1] << 8) | frame[2])
 
     def handle_range(self, mm):
-        # 0=too close, 1=invalid, 0xFFFF=too far — skip, EKF handles the gap
-        if mm in (0x0000, 0x0001, 0xFFFF):
-            return
+        # 0=too close, 1=invalid, 0xFFFF=too far. Report out-of-range instead of
+        # dropping: keeps the sensor "alive" for the FC (no 'Rangefinder: No Data'
+        # pre-arm) while on the ground in the dead zone; the FC won't fuse it.
+        if mm in (0x0000, 0x0001):
+            out_range = self.min_range - 0.01   # below min = out of range low
+        elif mm == 0xFFFF:
+            out_range = self.max_range + 0.01   # above max = out of range high
+        else:
+            out_range = None
+
         now = self.get_clock().now()
         if (now - self.last_pub).nanoseconds < self.pub_period_ns:
             return
@@ -107,7 +114,7 @@ class EvoMiniNode(Node):
         msg.field_of_view = 0.035
         msg.min_range = self.min_range
         msg.max_range = self.max_range
-        msg.range = mm / 1000.0
+        msg.range = out_range if out_range is not None else mm / 1000.0
         self.pub.publish(msg)
 
 
