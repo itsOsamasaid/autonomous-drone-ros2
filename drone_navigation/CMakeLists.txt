@@ -16,6 +16,12 @@ install(PROGRAMS
   drone_navigation/altitude_hold_node.py
   drone_navigation/position_hold_node.py
   drone_navigation/mission_node.py
+  drone_navigation/hardware_mission_node.py
+  drone_navigation/vision_pose_bridge.py
+  drone_navigation/evo_mini_node.py
+  drone_navigation/scan_tilt_filter.py
+  drone_navigation/guided_hold_test.py
+  drone_navigation/cmd_vel_to_mavros.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
