@@ -5,7 +5,7 @@ A fully autonomous quadcopter navigation system built on ROS 2 Jazzy. The drone 
 ## Demo
 ### Mapping
 ![Mapping Demo](media/mapping.gif)
-
+![syst arch](media/system_arch.png)
 ### Navigation
 ![Navigation Demo](media/navigation_demo.gif)
 
