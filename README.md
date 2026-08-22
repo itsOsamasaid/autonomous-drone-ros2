@@ -3,6 +3,8 @@
 A fully autonomous quadcopter navigation system built on ROS 2 Jazzy. The drone performs SLAM-based mapping, localizes within saved maps using AMCL, and navigates to user-defined goals through the Nav2 stack — with custom altitude and position hold controllers managing stable flight throughout the mission.
 
 ## Demo
+### Mapping
+![Mapping Demo](media/mapping.gif)
 
 ### Navigation
 ![Navigation Demo](media/navigation_demo.gif)
