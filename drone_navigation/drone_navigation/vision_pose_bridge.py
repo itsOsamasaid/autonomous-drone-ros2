@@ -1,26 +1,5 @@
 #!/usr/bin/env python3
-"""
-vision_pose_bridge.py — SLAM pose -> ArduPilot EKF3 (Phase 11).
-
-Looks up the SLAM pose (the map -> base_link transform produced by
-slam_toolbox + odometry) and republishes it to /mavros/vision_pose/pose.
-MAVROS then emits a VISION_POSITION_ESTIMATE MAVLink message, so ArduPilot's
-EKF3 (configured with an external-nav source) fuses LiDAR-SLAM position + yaw
-with the IMU and handles position/altitude hold itself.
-
-This REPLACES the simulation's gz-topic pose hack and the custom
-altitude_hold / position_hold PID nodes — on real hardware the flight
-controller does the low-level control; our job is just perception -> EKF.
-
-Subscribes to (via TF):
-    map -> base_link   (from slam_toolbox + odom)
-
-Publishes:
-    /mavros/vision_pose/pose   (geometry_msgs/PoseStamped, ENU; MAVROS -> NED)
-
-SAFETY: a bad / laggy / jumpy pose here = EKF divergence = flyaway.
-Validate on the bench (Gate A) before ever arming in GUIDED.
-"""
+# map -> base_link TF from slam_toolbox -> /mavros/vision_pose/pose -> EKF3 external nav
 
 import rclpy
 from rclpy.node import Node
@@ -55,9 +34,7 @@ class VisionPoseBridge(Node):
         self.pose_pub = self.create_publisher(
             PoseStamped, '/mavros/vision_pose/pose', 10)
 
-        # external nav has no GPS, so the EKF origin/home must be set or arming
-        # fails with 'AHRS: waiting for home'. Publish a fixed origin once vision
-        # is flowing (resent a few times so MAVROS reliably forwards it).
+        # no GPS -> EKF origin must be set manually or arming fails 'waiting for home'
         self.declare_parameter('origin_lat', 47.3977)
         self.declare_parameter('origin_lon', 8.5456)
         self.declare_parameter('origin_alt', 488.0)
@@ -94,8 +71,7 @@ class VisionPoseBridge(Node):
         self._last_stamp = stamp
 
         msg = PoseStamped()
-        # Keep the transform's own timestamp — EKF3 fuses by time, so the
-        # stamp must reflect when the pose was actually valid (latency matters).
+        # keep the transform's own timestamp, EKF3 fuses by time
         msg.header.stamp = tf.header.stamp
         msg.header.frame_id = self.map_frame
         msg.pose.position.x = tf.transform.translation.x

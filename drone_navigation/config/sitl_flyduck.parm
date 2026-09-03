@@ -1,0 +1,73 @@
+# FlyDuck SITL tuning — flight-relevant subset of the real FC export
+# (flyduck_params.params, ArduCopter 4.6.3, Pixhawk 6C Mini).
+# Load in MAVProxy:  param load <path to this file>
+# Deliberately EXCLUDES hardware-only params: compass/INS calibration, SERIAL*,
+# RC*, battery, and the EK3_SRC/VISO external-nav block (added in S4).
+
+FRAME_CLASS 1
+FRAME_TYPE 1
+
+# undo the junk that -f gazebo-iris injects: fake analog sonar + precision landing.
+# the real rangefinder is the Evo Mini over MAVLink (RNGFND1_TYPE 10), added in S6.
+RNGFND1_TYPE 0
+PLND_ENABLED 0
+RC8_OPTION 0
+
+# motors: hover throttle is the key one — sim overshoots badly without it
+MOT_THST_HOVER 0.2585781
+MOT_THST_EXPO 0.49
+MOT_SPIN_ARM 0.1
+MOT_SPIN_MIN 0.15
+MOT_SPIN_MAX 0.95
+MOT_HOVER_LEARN 2
+MOT_YAW_HEADROOM 200
+
+# attitude rate loop
+ATC_RAT_RLL_P 0.135
+ATC_RAT_RLL_I 0.135
+ATC_RAT_RLL_D 0.0036
+ATC_RAT_RLL_FLTD 37.5
+ATC_RAT_RLL_FLTT 37.5
+ATC_RAT_PIT_P 0.135
+ATC_RAT_PIT_I 0.135
+ATC_RAT_PIT_D 0.0036
+ATC_RAT_PIT_FLTD 37.5
+ATC_RAT_PIT_FLTT 37.5
+ATC_RAT_YAW_P 0.18
+ATC_RAT_YAW_I 0.018
+ATC_RAT_YAW_D 0
+ATC_RAT_YAW_FLTE 2
+ATC_RAT_YAW_FLTT 37.5
+
+# attitude angle loop
+ATC_ANG_RLL_P 4.5
+ATC_ANG_PIT_P 4.5
+ATC_ANG_YAW_P 4.5
+ATC_INPUT_TC 0.15
+ATC_ACCEL_R_MAX 168000
+ATC_ACCEL_P_MAX 168000
+ATC_ACCEL_Y_MAX 31500
+ANGLE_MAX 3000
+
+# position / altitude controllers
+PSC_POSXY_P 1
+PSC_POSZ_P 1
+PSC_VELXY_P 2
+PSC_VELXY_I 1
+PSC_VELXY_D 0.25
+PSC_VELZ_P 1
+PSC_ACCZ_P 0.5
+PSC_ACCZ_I 1
+
+INS_GYRO_FILTER 75
+
+# indoor speed limits — keep it slow, same as the lab
+WPNAV_SPEED 1000
+WPNAV_SPEED_UP 250
+WPNAV_SPEED_DN 150
+WPNAV_ACCEL 250
+PILOT_SPEED_UP 250
+LAND_SPEED 50
+
+# don't auto-disarm mid-session while setting up
+DISARM_DELAY 20

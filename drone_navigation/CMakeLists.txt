@@ -5,31 +5,18 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 
-# Install Python package
 ament_python_install_package(${PROJECT_NAME})
 
-# Install ALL Python nodes as executables
 install(PROGRAMS
-  drone_navigation/odom_tf_node.py
-  drone_navigation/takeoff_node.py
-  drone_navigation/cmd_vel_mux_node.py
-  drone_navigation/altitude_hold_node.py
-  drone_navigation/position_hold_node.py
-  drone_navigation/mission_node.py
-  drone_navigation/hardware_mission_node.py
   drone_navigation/vision_pose_bridge.py
-  drone_navigation/evo_mini_node.py
-  drone_navigation/scan_tilt_filter.py
+  drone_navigation/sim_rangefinder_bridge.py
   drone_navigation/guided_hold_test.py
-  drone_navigation/cmd_vel_to_mavros.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Install all resource directories
 install(DIRECTORY
   launch
   config
-  maps
   worlds
   models
   rviz

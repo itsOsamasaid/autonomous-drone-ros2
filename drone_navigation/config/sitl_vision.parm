@@ -1,0 +1,20 @@
+# S4 — vision-pose external nav, layered on top of sitl_flyduck.parm.
+# Mirrors the real FC's verified EKF3 setup (flyduck_params.params):
+# GPS off, XY+yaw from SLAM via vision_pose_bridge, Z stays on Baro until
+# the Evo Mini rangefinder bridge is validated (S6).
+
+GPS1_TYPE 0
+
+EK3_SRC1_POSXY 6
+EK3_SRC1_VELXY 0
+EK3_SRC1_POSZ 1
+EK3_SRC1_VELZ 0
+EK3_SRC1_YAW 6
+
+VISO_TYPE 1
+VISO_DELAY_MS 50
+VISO_POS_M_NSE 0.2
+VISO_YAW_M_NSE 0.2
+VISO_POS_X 0
+VISO_POS_Y 0
+VISO_POS_Z 0

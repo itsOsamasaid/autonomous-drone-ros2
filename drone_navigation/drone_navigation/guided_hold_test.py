@@ -1,20 +1,5 @@
 #!/usr/bin/env python3
-"""guided_hold_test.py — GUIDED takeoff to a set altitude, then hold one spot.
-
-Repeatable position-hold TEST. You arm (arming stays with the pilot). The node
-then: sets GUIDED, takes off to hold_alt, captures the takeoff X/Y, and holds
-that exact point while logging drift (actual vs setpoint). Auto-LANDs after
-max_time. Pilot override anytime: flip out of GUIDED (mode switch) or kill (SA).
-
-Hold controller (param hold_mode):
-  'pid'    -> our velocity PID on position error -> /mavros/setpoint_velocity/cmd_vel
-  'guided' -> ArduPilot's own position controller (fixed setpoint)
-Both read the same EKF/vision pose, so neither beats a bad estimate; PID's
-integral term can fight a steady one-direction bias, which is why it's offered.
-At max_time (or drift > max_drift_abort) it force-DISARMs (motors off, drops).
-
-SAFETY: props on, this FLIES the drone. Bad/jumping vision = drift. Thumb on SA.
-"""
+# arm -> GUIDED -> takeoff -> hold current XY/alt, logging drift. Props on, this flies.
 
 import math
 import rclpy
@@ -134,9 +119,7 @@ class GuidedHoldTest(Node):
                 f'set_mode({mode}) -> sent={f.result().mode_sent}'))
 
     def _emergency_disarm(self):
-        # force-disarm = motors OFF now (drone drops). MAV_CMD_COMPONENT_ARM_DISARM
-        # (400), param1=0 disarm, param2=21196 = force magic (allows in flight).
-        # Used instead of LAND because LAND drifts on the bad vision pose.
+        # force-disarm (motors off now, drone drops) - used over LAND since LAND drifts on bad vision pose
         if self.cli_cmd.service_is_ready():
             req = CommandLong.Request()
             req.command = 400
@@ -172,8 +155,7 @@ class GuidedHoldTest(Node):
         self.sp_pub.publish(sp)
 
     def _pid_hold(self, p):
-        # PID on local-frame position error -> velocity setpoint (GUIDED vel ctrl).
-        # ENU frame, same as local_position; MAVROS converts to NED.
+        # PID on local-frame position error -> velocity setpoint, ENU (MAVROS converts to NED)
         t = self._now()
         vx = self.pid_x.step(self.hold[0] - p.x, t)
         vy = self.pid_y.step(self.hold[1] - p.y, t)
@@ -212,8 +194,7 @@ class GuidedHoldTest(Node):
                 self._set_mode('GUIDED')
             elif self._now() - self._guided_t > 1.5:
                 self.hold = (p.x, p.y, self.pose.pose.orientation)
-                # ground reference: local z is EKF-origin-relative (baro drift
-                # etc. make it nonzero on the ground), so measure climb from here
+                # local z is EKF-origin-relative, not ground-relative - measure climb from here
                 self.z0 = p.z
                 self._do_takeoff()
                 self._takeoff_sent = True
@@ -248,8 +229,7 @@ class GuidedHoldTest(Node):
                 self.get_logger().info(
                     f'reached {self.hold_alt:.1f} m -> HOLD ({self.hold_mode})')
                 self.phase = 'hold'
-            # command only during hold: any setpoint sent while ArduPilot's guided
-            # takeoff is running CANCELS it (and targets are ignored while landed)
+            # command only during hold: a setpoint sent mid-takeoff cancels it
             if self.phase == 'hold':
                 if self.hold_mode == 'pid':
                     self._pid_hold(p)

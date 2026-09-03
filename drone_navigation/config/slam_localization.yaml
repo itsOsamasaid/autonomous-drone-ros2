@@ -3,7 +3,7 @@ slam_toolbox:
     base_frame: base_link
     map_frame: map
     odom_frame: odom
-    scan_topic: /scan_filtered
+    scan_topic: /scan
     mode: localization
 
     # map_file_name is set from the launch file (saved .posegraph, no extension)
@@ -15,8 +15,7 @@ slam_toolbox:
     transform_timeout: 0.2
     transform_publish_period: 0.02
 
-    # 0.0 = process every scan; identity odom reports no motion, so any nonzero
-    # gate freezes localization. Scan-matching then tracks pose directly.
+    # 0.0: identity odom reports no motion, so any nonzero gate freezes localization
     minimum_travel_distance: 0.0
     minimum_travel_heading: 0.0
 

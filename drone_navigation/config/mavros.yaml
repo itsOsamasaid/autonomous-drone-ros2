@@ -27,7 +27,7 @@
         id: 0
         orientation: PITCH_270
 
-# odom->base_link TF comes from our odom_tf_node, not MAVROS
+# odom->base_link TF disabled - static identity in the launch file for now (see odometry gap)
 /**/local_position:
   ros__parameters:
     tf:
